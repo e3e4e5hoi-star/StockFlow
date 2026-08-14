@@ -1,0 +1,6 @@
+var/
+*.sqlite
+*.class
+build/
+.idea/
+.vscode/
