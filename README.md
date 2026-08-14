@@ -31,12 +31,31 @@ List products:
 curl http://127.0.0.1:8080/products
 ```
 
+Create a product:
+
+```bash
+curl -X POST http://127.0.0.1:8080/products -H 'Content-Type: application/json' \\
+  -d '{"sku":"NEW-001","name":"New Item","stock":10,"price_cents":2500}'
+```
+
 Create an order:
 
 ```bash
 curl -X POST http://127.0.0.1:8080/orders \
   -H 'Content-Type: application/json' \
   -d '{"customer_email":"buyer@example.com","items":[{"sku":"DEMO-001","quantity":2}]}'
+```
+
+Look up an order:
+
+```bash
+curl http://127.0.0.1:8080/orders/1
+```
+
+Cancel a pending order and restore its stock:
+
+```bash
+curl -X POST http://127.0.0.1:8080/orders/1/cancel
 ```
 
 Checkout is transactional. It validates the email and items, locks the workflow inside a SQLite transaction, decrements stock with a conditional update, inserts order items and records an event. If any operation fails, the transaction rolls back.
@@ -55,6 +74,10 @@ Expected Java output:
 ORDER_ACCEPTED
 DUPLICATE
 ```
+
+## Regression fixes
+
+The upgrade rejects malformed JSON as a client error, validates every order item as an object, rejects duplicate SKUs with a clear domain error, makes cancellation idempotent, restores inventory exactly once, and rejects blank Java event payloads.
 
 ## Security and production notes
 

@@ -6,7 +6,7 @@ import java.util.Set;
 public final class OrderWorker {
     private final Set<String> processed = new HashSet<>();
     public synchronized String process(String eventId, String payload) {
-        if (eventId == null || eventId.isBlank() || payload == null) throw new IllegalArgumentException("eventId and payload are required");
+        if (eventId == null || eventId.isBlank() || payload == null || payload.isBlank()) throw new IllegalArgumentException("eventId and payload are required");
         if (!processed.add(eventId)) return "DUPLICATE";
         return "ORDER_ACCEPTED";
     }
